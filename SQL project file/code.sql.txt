@@ -1,0 +1,85 @@
+SELECT count(user_id)
+FROM page_visits;
+
+
+WITH first_touch AS (
+SELECT user_id, MIN(timestamp) as first_touch_at
+FROM page_visits
+GROUP BY user_id
+)
+SELECT pv.utm_campaign, pv.utm_source, count(ft.first_touch_at)
+		
+FROM first_touch ft
+JOIN page_visits pv
+ON ft.user_id = pv.user_id
+AND ft.first_touch_at = pv.timestamp
+GROUP BY utm_campaign;
+    
+    
+
+WITH last_touch AS (
+SELECT user_id, Max(timestamp) as last_touch_at
+FROM page_visits
+GROUP BY user_id
+)
+SELECT pv.utm_campaign, pv.utm_source, count(lt.last_touch_at)
+		
+FROM last_touch lt
+JOIN page_visits pv
+ON lt.user_id = pv.user_id
+AND lt.last_touch_at = pv.timestamp
+GROUP BY utm_campaign;
+
+SELECT count(distinct utm_source)
+FROM page_visits;
+SELECT count(distinct utm_campaign)
+FROM page_visits;
+
+SELECT distinct utm_source, utm_campaign
+FROM page_visits;
+SELECT distinct page_name
+FROM page_visits;
+
+SELECT count(distinct user_id)
+FROM page_visits
+WHERE page_name = '4 - purchase';
+
+WITH last_touch AS (
+SELECT user_id, Max(timestamp) as last_touch_at
+FROM page_visits
+GROUP BY user_id
+)
+
+SELECT pv.user_id, pv.utm_campaign, pv.utm_source, pv.page_name, count(lt.last_touch_at)
+		
+FROM last_touch lt
+JOIN page_visits pv
+ON lt.user_id = pv.user_id
+AND lt.last_touch_at = pv.timestamp
+GROUP BY pv.utm_campaign
+ORDER BY count(lt.last_touch_at) desc;
+  
+  
+
+WITH first_touch AS (
+SELECT user_id, min(timestamp) as first_touch_at
+FROM page_visits
+GROUP BY user_id
+)
+
+SELECT pv.user_id, pv.utm_campaign, pv.utm_source, pv.page_name, count(ft.first_touch_at)
+FROM first_touch ft
+JOIN page_visits pv
+ON ft.user_id = pv.user_id
+AND ft.first_touch_at = pv.timestamp
+GROUP BY pv.utm_campaign
+ORDER BY count(ft.first_touch_at) desc;
+  
+  
+  
+
+
+
+
+
+
